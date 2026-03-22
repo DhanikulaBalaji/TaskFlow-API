@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 from app.routers import tasks
+from app.telemetry import TelemetryMiddleware, get_metrics
 
 Base.metadata.create_all(bind=engine)
 
@@ -11,6 +12,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
+app.add_middleware(TelemetryMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -25,3 +27,8 @@ app.include_router(tasks.router)
 @app.get("/", tags=["root"])
 def root():
     return {"message": "Welcome to TaskFlow API", "docs": "/docs"}
+
+
+@app.get("/metrics", tags=["telemetry"])
+def metrics():
+    return get_metrics()
