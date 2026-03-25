@@ -1,9 +1,14 @@
+"""SQLAlchemy ORM models for TaskFlow API entities."""
+
 from datetime import datetime
+
 from sqlalchemy import Column, Integer, String, DateTime
 from app.database import Base
 
 
 class Task(Base):
+    """Represents a task in the task management system."""
+
     __tablename__ = "tasks"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)

@@ -1,3 +1,5 @@
+"""Streamlit dashboard for visualizing TaskFlow API telemetry metrics."""
+
 import streamlit as st
 import requests
 import plotly.express as px
@@ -22,10 +24,10 @@ if not metrics_data:
 
 col1, col2 = st.columns(2)
 
-endpoints = list(metrics_data.keys())
-request_counts = [v["request_count"] for v in metrics_data.values()]
-avg_times = [v["average_response_time"] for v in metrics_data.values()]
-error_rates = [v["error_rate"] for v in metrics_data.values()]
+endpoints: list[str] = list(metrics_data.keys())
+request_counts: list[int] = [v["request_count"] for v in metrics_data.values()]
+avg_times: list[float] = [v["average_response_time"] for v in metrics_data.values()]
+error_rates: list[float] = [v["error_rate"] for v in metrics_data.values()]
 
 with col1:
     st.subheader("Request Count per Endpoint")
@@ -46,7 +48,7 @@ with col3:
 
 with col4:
     st.subheader("Status Code Distribution")
-    all_codes = {}
+    all_codes: dict[str, int] = {}
     for v in metrics_data.values():
         for code, count in v["status_codes"].items():
             all_codes[code] = all_codes.get(code, 0) + count
@@ -56,8 +58,13 @@ with col4:
 
 st.subheader("Raw Metrics Data")
 df = pd.DataFrame([
-    {"Endpoint": k, "Requests": v["request_count"], "Avg Response Time": v["average_response_time"],
-     "Errors": v["error_count"], "Error Rate": v["error_rate"]}
+    {
+        "Endpoint": k,
+        "Requests": v["request_count"],
+        "Avg Response Time": v["average_response_time"],
+        "Errors": v["error_count"],
+        "Error Rate": v["error_rate"],
+    }
     for k, v in metrics_data.items()
 ])
 st.dataframe(df, use_container_width=True)

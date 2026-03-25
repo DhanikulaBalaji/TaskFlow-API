@@ -1,5 +1,9 @@
+"""Database engine configuration and session management for TaskFlow API."""
+
+from typing import Generator
+
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import sessionmaker, DeclarativeBase, Session
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./taskflow.db"
 
@@ -13,7 +17,8 @@ class Base(DeclarativeBase):
     pass
 
 
-def get_db():
+def get_db() -> Generator[Session, None, None]:
+    """Yield a database session and ensure it is closed after use."""
     db = SessionLocal()
     try:
         yield db

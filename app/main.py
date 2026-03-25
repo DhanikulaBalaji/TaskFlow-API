@@ -1,5 +1,8 @@
+"""FastAPI application entry point for TaskFlow API."""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from app.database import engine, Base
 from app.routers import tasks
 from app.telemetry import TelemetryMiddleware, get_metrics
@@ -25,10 +28,12 @@ app.include_router(tasks.router)
 
 
 @app.get("/", tags=["root"])
-def root():
+def root() -> dict:
+    """Return a welcome message with a link to the API documentation."""
     return {"message": "Welcome to TaskFlow API", "docs": "/docs"}
 
 
 @app.get("/metrics", tags=["telemetry"])
-def metrics():
+def metrics() -> dict:
+    """Return collected telemetry metrics for all endpoints."""
     return get_metrics()

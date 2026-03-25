@@ -1,9 +1,12 @@
+"""Telemetry middleware for tracking per-endpoint request metrics."""
+
 import time
 from collections import defaultdict
+
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
-metrics_store = {
+metrics_store: dict = {
     "endpoints": defaultdict(lambda: {
         "request_count": 0,
         "total_response_time": 0.0,
@@ -14,7 +17,9 @@ metrics_store = {
 
 
 class TelemetryMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
+    """Middleware that intercepts every request to collect timing and error metrics."""
+
+    async def dispatch(self, request: Request, call_next) -> Response:
         endpoint = f"{request.method} {request.url.path}"
         start_time = time.time()
 
@@ -41,9 +46,10 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
 
 
 def get_metrics() -> dict:
-    result = {}
+    """Compute aggregated metrics from the in-memory store."""
+    result: dict = {}
     for endpoint, data in metrics_store["endpoints"].items():
-        count = data["request_count"]
+        count: int = data["request_count"]
         result[endpoint] = {
             "request_count": count,
             "average_response_time": round(data["total_response_time"] / count, 4) if count > 0 else 0,
